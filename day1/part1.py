@@ -1,4 +1,4 @@
-file_path = "/Users/yokurang/Documents/Projects/aoc-py/d1/input.txt"
+file_path = "/Users/yokurang/Documents/Projects/aoc-py/day1/input2.txt"
 
 try:
     with open(file_path, "r") as file:
