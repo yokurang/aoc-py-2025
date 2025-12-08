@@ -1,5 +1,3 @@
-from posix import access
-
 file_path = "/Users/yokurang/Documents/Projects/aoc-py-2025/day4/input.txt"
 
 board = []
