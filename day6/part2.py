@@ -1,19 +1,84 @@
-import numpy as np
+import collections
 
-file_path = "/Users/yokurang/Documents/Projects/aoc-py/day6/test.txt"
 
-m = []
-grand_total = 0
+def part2(inputs):
+    # Determine separator columns (True = separator)
+    sep = [True] * (len(inputs[0]) + 5)
+    for i in range(len(inputs)):
+        for j in range(len(inputs[i])):
+            if inputs[i][j] != " ":
+                sep[j] = False
 
-with open(file_path, "r") as file:
-    for line in file:
-        t = line.split()
-        m.append(t)
+    # Parse operators from the last row
+    ops = collections.deque(x for x in inputs[-1].split(" ") if x != "")
 
-    for i in range(len(m) - 1):
-        m[i] = list(map(int, m[i]))
+    # Set initial operator and accumulator
+    p = ops.popleft()
+    if p == "*":
+        currentop = "*"
+        current = 1
+    else:
+        currentop = "+"
+        current = 0
 
-    m = np.array(m).T
-    row, col = len(m), len(m[0]) - 1
-    print(f"m={m}")
-    # print(f"grand_total={grand_total}")
+    # Max width across rows
+    mx = max(len(line) for line in inputs)
+
+    ans = []
+
+    for i in range(mx):
+        if sep[i]:
+            # end of a problem → store result
+            ans.append(current)
+
+            # start new problem
+            p = ops.popleft()
+            if p == "*":
+                currentop = "*"
+                current = 1
+            else:
+                currentop = "+"
+                current = 0
+
+            continue
+
+        # Build number from column i
+        c = 0
+        for j in range(len(inputs) - 1):  # skip operator row
+            if i >= len(inputs[j]):
+                p = " "
+            else:
+                p = inputs[j][i]
+
+            if not p.isdigit():
+                continue
+
+            c = c * 10 + int(p)
+
+        # Apply operator
+        if currentop == "+":
+            current += c
+        else:
+            current *= c
+
+    ans.append(current)
+
+    print(ans)
+    print(sum(ans))
+
+
+# ------------------------
+# LOAD FROM FILE PATH
+# ------------------------
+
+
+def run_from_file(file_path):
+    with open(file_path, "r") as f:
+        # VERY IMPORTANT: strip newline ONLY, preserve spaces
+        inputs = [line.rstrip("\n") for line in f.readlines()]
+
+    part2(inputs)
+
+
+# Example usage:
+run_from_file("/Users/yokurang/Documents/Projects/aoc-py-2025/day6/input.txt")
